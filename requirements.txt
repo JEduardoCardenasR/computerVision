@@ -1,8 +1,2 @@
-deepface
-fastapi
-uvicorn
-python-multipart
+opencv-contrib-python>=4.10,<5
 numpy
-tf-keras
-scipy
-opencv-python-headless

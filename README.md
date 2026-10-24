@@ -1,97 +1,71 @@
-# MoodMeter 📊🎭 — Decodificador de Expresiones Faciales con IA
+# Asistencia con reconocimiento facial
 
-**MoodMeter** es un playground interactivo y didáctico de visión por computadora diseñado para analizar emociones y microexpresiones faciales en tiempo real. 
+Sistema sencillo que detecta un rostro, lo compara con las personas registradas y anota la asistencia. Si alguien registrado no aparece, la consola simula un aviso a padres o supervisores (solo un mensaje, no envía nada).
 
-Impulsado por **FastAPI** en el backend y la librería de aprendizaje profundo **DeepFace**, el sistema traduce capturas de video en distribuciones de probabilidad emocional usando una **Red Neuronal Convolucional (CNN)** de última generación y despliega un dashboard con estética premium **Glassmorphism en Modo Oscuro** junto con explicaciones conceptuales integradas.
+## Qué necesitas
 
----
+- Python 3.10, 3.11 o 3.12
+- Una cámara web, **o** una foto clara de frente (JPG o PNG)
 
-## 🧠 ¿Cómo Decodifica la IA las Emociones?
+## Cómo ejecutarlo
 
-A diferencia de las computadoras, los seres humanos percibimos expresiones faciales de forma instantánea y subconsciente. Para que una máquina replique esto, implementa un pipeline convolucional jerárquico paso a paso:
+Abre una terminal **en esta carpeta** (la que contiene `asistencia.py`).
 
-```
-[ Entrada: Webcam o Foto ]
-          │
-          ▼
-[ Detector de Rostro (OpenCV) ] ──> Recorta el rostro y alinea ojos y boca.
-          │
-          ▼
-[ Capas Convolucionales de la CNN ] ──> Extraen rasgos abstractos (comisura de labios, cejas).
-          │
-          ▼
-[ Capa Completamente Conectada ] ──> Genera 7 puntuaciones brutas (logits) de emoción.
-          │
-          ▼
-[ Función de Activación Softmax ] ──> Normaliza los logits en probabilidades (suman 100%).
-          │
-          ├───────────────────────────┐
-          ▼                           ▼
-[ Medidores Neón en Vivo ]     [ Curva Dinámica (Mood Timeline) ]
+### Windows
+
+```powershell
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python asistencia.py
 ```
 
-### La Matemática Detrás: Función Softmax
-La última capa de la red de emociones arroja puntuaciones crudas ($z_i$) para cada emoción básica. Para traducir estas puntuaciones abstractas en porcentajes legibles que sumen exactamente **100%**, la red implementa la función matemática **Softmax**:
+### Mac o Linux
 
-$$\sigma(\mathbf{z})_i = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}$$
-
-* La función aplica un operador exponencial ($e^{z_i}$) a cada puntuación para asegurar que todos los valores sean estrictamente positivos.
-* Luego, divide cada valor por la suma de todos los exponenciales ($\sum e^{z_j}$), convirtiendo los números en una distribución de probabilidad coherente.
-* La probabilidad más alta indica la **emoción dominante** calculada por la IA.
-
----
-
-## 📂 Estructura del Repositorio
-
-La arquitectura del proyecto está optimizada para ser ligera, rápida y 100% libre de bases de datos persistentes:
-
-```
-computerV/
-├── app/
-│   ├── main.py                 # Servidor FastAPI con pipeline de inferencia DeepFace
-│   └── templates/
-│       ├── index.html          # Frontend premium en HTML5 con Canvas y webcam
-│       └── style.css           # Estilos de alta gama (neón, vidrio esmerilado y animaciones)
-├── requirements.txt            # Dependencias del proyecto de Python
-└── start.sh                    # Script bash para instalación y arranque automático
-```
-
----
-
-## 🛠️ Instalación y Arranque Automático
-
-Sigue estos sencillos pasos para instalar y poner en marcha **MoodMeter** en tu máquina local:
-
-### 1. Navegar al Directorio del Proyecto
 ```bash
-cd /Users/leonelmendiola/computerV
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python asistencia.py
 ```
 
-### 2. Arrancar la Aplicación
-El sistema incluye un script automatizado `start.sh` que se encargará de crear el entorno virtual (`venv`), actualizar `pip`, instalar todas las dependencias y levantar el servidor FastAPI:
-```bash
-./start.sh
-```
+La primera vez `pip` puede tardar un poco: instala OpenCV.
 
-### 3. Abrir el Navegador
-Una vez que el servidor reporte estar listo, abre tu navegador en:
-👉 **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
+## Cómo probarlo
 
-> 💡 **Nota de Primera Ejecución**: La primera vez que presiones "Escanear Rostro", DeepFace descargará automáticamente los pesos preentrenados del clasificador de emociones de Keras (~20MB). Este proceso se realiza una sola vez de forma interna y tardará solo unos segundos según tu velocidad de internet.
+1. Elige **1** y escribe un nombre. Mira de frente a la cámara hasta que junte 20 fotos. **ESC** cancela.
+2. Elige **3**. Vuelve a mirar la cámara. Si te reconoce, imprime `Asistencia registrada: tu nombre` y dibuja un recuadro verde.
+3. Pulsa **Q**. Abajo verás quién llegó y un aviso simulado para quien no llegó.
+4. Elige **5** para ver la lista del día. El archivo queda en `datos/asistencia.csv`.
 
----
+### Sin cámara
 
-## 💻 Características del Dashboard
+1. Elige **2**, escribe el nombre y pega la ruta de una foto. Ejemplo: `C:\Users\Ana\Desktop\ana.jpg`
+2. Elige **4** y usa otra foto de la misma persona (o la misma).
+3. Elige **5** para ver el registro.
 
-* **Captura Multidispositivo**: Si cuentas con cámara web activa, la rejilla láser cibernética escaneará tu rostro en vivo. Si no posees cámara web, haz clic en **Archivo** para subir cualquier fotografía local.
-* **Mira Láser Flotante**: Al completar el escaneo, verás un recuadro cibernético dashed de color cian dibujado exactamente sobre las coordenadas físicas de tu rostro.
-* **Gauges de Distribución**: Muestra barras neón de colores que representan el peso asignado por la red a cada emoción en tiempo real.
-* **Mood Timeline (Línea de Tiempo)**: Un gráfico dinámico hecho con HTML5 Canvas que conecta los puntos de tus escaneos secuenciales. La curva cambia de color dinámicamente según la emoción dominante registrada en cada paso, ilustrando tu transición emocional (ej. de enojo a alegría).
+Con una sola foto el reconocimiento es más débil que con la cámara. Si sale `Desconocido`, registra de nuevo con más luz o sube `UMBRAL` en `asistencia.py` (está al inicio del archivo; un número más alto acepta parecidos más flojos).
 
----
+## Controles
 
-## ⚡ Tecnologías Utilizadas
-* **FastAPI** — API de alta velocidad en Python.
-* **DeepFace** — Framework de análisis facial inmersivo.
-* **OpenCV** — Localización y procesamiento espacial del rostro.
-* **HTML5 / CSS3 / JavaScript (ES6)** — Frontend premium inmersivo sin dependencias pesadas.
+| Tecla | Dónde | Qué hace |
+| --- | --- | --- |
+| ESC | Registro con cámara | Cancela |
+| Q | Asistencia con cámara | Termina y muestra faltas |
+| Cualquier tecla | Ventana de una foto | Cierra la foto |
+
+El número junto al nombre es la distancia. Más bajo significa que se parece más. Si pasa de `UMBRAL` (70), se marca como desconocido y no se anota asistencia.
+
+## Si algo falla
+
+- **No abre la cámara:** cierra otras apps que la usen, o prueba las opciones 2 y 4 con una foto.
+- **Siempre dice Desconocido:** registra otra vez con más luz, de frente. Si sigue igual, en `asistencia.py` sube `UMBRAL` de 70 a 90.
+- **Error al abrir archivos y la carpeta tiene acentos:** el programa ya usa el nombre corto de Windows. Si aun así falla, copia el proyecto a `C:\asistencia` y ejecútalo desde ahí.
+- La carpeta `computerVision` es otro ejemplo. Este proyecto es `asistencia.py`.
+
+## Cómo está hecho
+
+- **Detección:** Haar Cascade de OpenCV. Encuentra el rectángulo del rostro.
+- **Reconocimiento:** LBPH (`opencv-contrib-python`). Compara el rostro con las fotos de `datos/rostros/`.
+- **Asistencia:** una fila por persona al día en `datos/asistencia.csv`.
+- **Aviso:** si alguien está registrado y no tiene fila hoy, se imprime `Notificando a padres/supervisor: ...`. No se envía correo ni mensaje real.
